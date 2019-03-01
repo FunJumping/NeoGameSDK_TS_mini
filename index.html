@@ -1,0 +1,456 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>BlackCat SDK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="res/css/panel.css" type="text/css" />
+
+
+    <script src="lib/rollup/aes.js"></script>
+    <script src="lib/component/aes.js"></script>
+    <script src="lib/component/mode-ecb.js"></script>
+    <script src="lib/component/pad-nopadding.js"></script>
+    <script src="lib/scrypt.js"></script>
+    <script src="lib/jsrsasign.js"></script>
+    <script src="lib/neo-ts.js"></script>
+    <script src="lib/qr-code-with-logo.browser.min.js"></script>
+    <script src="lib/code.js"></script>
+
+    <script src="vue.min.js"></script>
+
+</head>
+
+<body style="background-color: cadetblue;">
+
+<style>
+.sdkfunc {
+    position: relative; float: left; width: 100%;
+}
+.sdkborder {
+    padding: 3px; margin: 5px; position: relative; float: left; border: solid 2px green ; text-align: center
+}
+.sdktitle {
+    width: 100%; text-align: center;
+}
+.sdkbutton {
+    padding: 3px; margin: 5px; position: relative; float: left;
+}
+.sdkfuncpar .sdkres .sdkresfunc {
+    position: relative; float: left; width: 100%
+}
+.sdkclear {
+    clear:both;
+}
+</style>
+
+<div class="sdkmain" id="app">
+    <div class="sdkfunc">
+        <div class="sdkborder">
+            <div class="sdktitle">{{ lang.title_ready }}</div>
+            <button class="sdkbutton" onclick="initSDK()">{{ lang.sdk_init }}</button>
+            <button class="sdkbutton" onclick="lockNet()">{{ lang.sdk_lock_net }}</button>
+        </div>
+
+        <div class="sdkborder">
+            <div class="sdktitle">{{ lang.title_base }}</div>
+            <button class="sdkbutton" onclick="login()">{{ lang.sdk_login }}</button>
+            <button class="sdkbutton" onclick="getUserInfo()">{{ lang.sdk_uinfo }}</button>
+            <button class="sdkbutton" onclick="getNetType()">{{ lang.sdk_net_type }}</button>
+            <button class="sdkbutton" onclick="getbalance()">{{ lang.sdk_balance }}</button>
+            <button class="sdkbutton" onclick="getHeight()">{{ lang.sdk_height }}</button>
+        </div>
+
+        <div class="sdkborder">
+            <div class="sdktitle">{{ lang.title_advance}}</div>
+            <button class="sdkbutton" onclick="showDiv('invokescriptdiv')">{{ lang.sdk_invoke}}</button>
+            <button class="sdkbutton" onclick="showDiv('makerawtransactiondiv')">{{ lang.sdk_makeraw }}</button>
+            <button class="sdkbutton" onclick="showDiv('confirmNotifydiv')">{{ lang.sdk_notify }}</button>
+        </div>
+
+        <div class="sdkborder">
+            <div class="sdktitle">{{ lang.title_pay }}</div>
+            <button class="sdkbutton" onclick="showDiv('makeTransferdiv')">{{ lang.sdk_transfer }}</button>
+            <button class="sdkbutton" onclick="showDiv('makeGasTransferMultidiv')">{{ lang.sdk_gasmulti }}</button>
+        </div>
+            
+        <div class="sdkborder">
+            <div class="sdktitle">{{ lang.title_lang }}</div>
+            <button class="sdkbutton" onclick="setLang('cn')">{{ lang.sdk_langcn }}</button>
+            <button class="sdkbutton" onclick="setLang('en')">{{ lang.sdk_langen }}</button>
+            <button class="sdkbutton" onclick="setLang('jp')">{{ lang.sdk_langjp }}</button>
+        </div>
+
+        <div class="sdkborder">
+            <div class="sdktitle">{{ lang.title_icon }}</div>
+            <button class="sdkbutton" onclick="showMain()">{{ lang.sdk_iconshow }}</button>
+            <button class="sdkbutton" onclick="showIcon()">{{ lang.sdk_iconhidden }}</button>
+        </div>
+
+
+        <div class="sdkborder">
+            <div class="sdktitle">{{ lang.title_net }}</div>
+            <button class="sdkbutton" onclick="setDefaultNetType(1)">{{ lang.sdk_net_main }}</button>
+            <button class="sdkbutton" onclick="setDefaultNetType(2)">{{ lang.sdk_net_test }}</button>
+        </div>
+
+    </div>
+
+    <div class="sdkfuncpar">
+        <div><br>&nbsp;<br></div>
+
+        <!-- invokeScript -->
+        <div class="dis" id="invokescriptdiv" style="display:none">
+            {{ lang.div_invoke_nnc }}<br/>
+            <input style="width: 100%" type="text" id="nnc" name="nnc" value="0x74f2dc36a68fdc4682034178eb2220729231db76"><br/>
+
+            {{ lang.div_invoke_sbParamJson }}<br/>
+            <input style="width: 100%" type="text" id="sbParamJson" name="sbParamJson" value='["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"]'/><br/>
+
+            {{ lang.div_invoke_sbPushString }}<br/>
+            <input style="width: 100%" type="text" id="sbPushString" name="sbPushString" value="balanceOf" /><br/>
+
+            {{ lang.div_invoke_extString }}<br/>
+            <input style="width: 100%" type="text" id="extString" name="extString" value="invokeScript"><br/>
+
+            <br/><button onclick="invokescript()">{{ lang.div_invoke_do }}</button>
+        </div>
+        
+        <!-- makeRawTransaction -->
+        <div class="dis" id="makerawtransactiondiv" style="display: none">
+            {{ lang.div_makeraw_nnc }}<br/>
+            <input style="width: 100%" type="text" id="nnc2" name="nnc" value="0x74f2dc36a68fdc4682034178eb2220729231db76"><br/>
+
+            {{ lang.div_makeraw_sbParamJson }}<br/>
+            <input style="width: 100%" type="text" id="sbParamJson2" name="sbParamJson" value='["(addr)AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5","(address)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT","(integer)100000"]'/><br/>
+
+            {{ lang.div_makeraw_sbPushString }}<br/>
+            <input style="width: 100%" type="text" id="sbPushString2" name="sbPushString" value="transfer" /><br/>
+
+            {{ lang.div_makeraw_extString }}<br/>
+            <input style="width: 100%" type="text" id="extString2" name="extString2" value="makeRawTransaction"><br/>
+
+            <br/><button onclick="makerawtransaction()">{{ lang.div_makeraw_do }}</button>
+        </div>
+    
+    
+        <!-- confirmNotify -->
+        <div class="dis" id="confirmNotifydiv" style="display: none">
+            {{ lang.div_confirm_txid }}<br/>
+            <input style="width: 100%" type="text" id="txid" name="txid" value=""><br/>
+
+            <br/><button onclick="confirmappnotify()">{{ lang.div_confirm_do }}</button>
+        </div>
+    
+        <!-- transfer -->
+        <div class="dis" id="makeTransferdiv" style="display: none">
+            {{ lang.div_transfer_type }}<br/>
+            <input style="width: 100%" type="text" id="trans_type" name="trans_type" value="gas"><br/>
+
+            {{ lang.div_transfer_toaddr }}<br/>
+            <input style="width: 100%" type="text" id="trans_toaddr" name="trans_toaddr" value="AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5"><br/>
+
+            {{ lang.div_transfer_count }}<br/>
+            <input style="width: 100%" type="text" id="trans_count" name="trans_count" value="1"><br/>
+            
+            {[ lang.div_transfer_extString }}<br/>
+            <input style="width: 100%" type="text" id="trans_extString" name="trans_extString" value="makeTransfer"><br/>
+
+            <br/><button onclick="makeTransfer()">{{ lang.div_transfer_do }}</button>
+        </div>
+    
+        <!-- gasTransferMulti -->
+        <div class="dis" id="makeGasTransferMultidiv" style="display: none">
+            (1){{ lang.div_gasmulti_toaddr }}<br/>
+            <input style="width: 100%" type="text" id="toaddrMulti1" name="toaddrMulti1" value="AbYR3eUbPUcnenEfmbJ7Fc4DUZLabKD6Cf"><br/>
+            
+            (1){{ lang.div_gasmulti_count }}<br/>
+            <input style="width: 100%" type="text" id="gascountMulti1" name="gascountMulti1" value="0.001"><br/>
+
+            (1){{ lang.div_gasmulti_extString }}<br/>
+            <input style="width: 100%" type="text" id="extStringMulti1" name="extStringMulti1" value="makeGasTransferMulti1"><br/>
+    
+            <br/>
+
+            (2){{ lang.div_gasmulti_toaddr }}<br/>
+            <input style="width: 100%" type="text" id="toaddrMulti2" name="toaddrMulti2" value="AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"><br/>
+            
+            (2){{ lang.div_gasmulti_count }}<br/>
+            <input style="width: 100%" type="text" id="gascountMulti2" name="gascountMulti2" value="0.002"><br/>
+
+            (2){{ lang.div_gasmulti_extString }}<br/>
+            <input style="width: 100%" type="text" id="extStringMulti2" name="extStringMulti2" value="makeGasTransferMulti2"><br/>
+
+            <br/><button onclick="makeGasTransferMulti()">{{ lang.div_gasmulti_do }}</button>
+        </div>
+    
+
+    </div>
+
+    <div class="sdkclear"></div>
+    
+</div>
+
+<br>
+listener callback data：
+<div id="res" class="sdkres"></div>
+<br>
+function callback data：
+<div id="res_func" class="sdkresfunc"></div>
+
+<script src="lang.index.js"></script>
+
+    <script>
+
+        var listener = function (data) {
+            // 页面显示
+            var resObj = document.getElementById('res')
+            resObj.innerHTML = '<pre>' + JSON.stringify(JSON.parse(data), null, 4) + '</pre>'
+
+            // 回调处理，data是JSON格式String
+            var res = JSON.parse(data)
+            console.log('[index]', 'listener => ', res)
+            switch (res.cmd) {
+                case "loginRes": // 登录回调
+                    var loginInfo = res.data;
+                    // 此处需要发送接收到的数据到服务端验证后再登录应用
+                    break;
+				case "getUserInfoRes": // 获取登录用户信息
+                    var userInfo = res.data;
+                    break;
+                case "getNetTypeRes": // 获取网络类型
+                    var net_type = res.data;
+                    if (net_type == 1) {
+                        // 主网
+                    }
+                    else if (net_type == 2) {
+                        // 测试网
+                    }
+                    break;
+                case "getBalanceRes": // 获取余额
+                    var result = res.data;
+                    var sgas = result.sgas;
+                    var gas = result.gas;
+                    break;
+                case "getHeightRes": // 获取余额
+                    var result = res.data;
+                    var sgas = result.sgas;
+                    var gas = result.gas;
+                    break;
+                case "invokescriptRes": // 合约读取调用
+                    var params = res.data.params; // 合约调用参数
+                    var result = res.data.res; // 合约调用结果
+                    if (result.err == true) {
+                        // 执行失败
+                    }
+                    else {
+                        // 执行成功
+                        var success_data = result.info;
+                    }
+                    break;
+                case "makeRawTransactionRes": // 合约写入请求结果
+                    // 回调数据格式参考invokescriptRes
+                    break;
+                case "confirmAppNotifyRes": // 交易通知接收确认回调
+                    // 回调数据格式参考invokescriptRes
+                    break;
+			    case "makeGasTransferMultiRes": // GAS批量转账回调
+					break;
+		        case "logoutRes": // 登出回调
+					break;
+                case "changeNetTypeRes": // 网络切换回调
+                    var net_type = res.data;
+                    if (net_type == 1) {
+                        // 主网
+                    }
+                    else if (net_type == 2) {
+                        // 测试网
+                    }
+                    break;
+                case "getAppNotifysRes": // 交易成功回调
+                    for (let i=0; i< res.data.length; i++ ){
+                        let txid = res.data[i].txid;
+                        BlackCat.SDK.confirmAppNotify({txid: txid})
+                    }
+                    break;
+				case "confirmAppNotifyRes": // 交易确认成功回调
+					break;
+            }
+        };
+
+
+        function showFuncRes(data) {
+            var resObj = document.getElementById('res_func')
+            resObj.innerHTML = '<pre>' + JSON.stringify(data, null, 4) + '</pre>'
+        }
+
+
+
+        function showDiv(id) {
+            document.getElementById("invokescriptdiv").style.display = "none";
+            document.getElementById("makerawtransactiondiv").style.display = "none";
+
+            document.getElementById("confirmNotifydiv").style.display = "none";
+
+            document.getElementById("makeTransferdiv").style.display = "none"
+            document.getElementById("makeGasTransferMultidiv").style.display = "none";
+
+
+            if (id) document.getElementById(id).style.display = ""
+        }
+
+        function initSDK() {
+            showDiv(null)
+            BlackCat.SDK.init(listener, langbase.lang)
+        }
+
+        function setLang(lang) {
+            VueApp.changelang(lang)
+            showDiv(null)
+            BlackCat.SDK.setLang(lang)
+        }
+
+        function login() {
+            showDiv(null)
+            BlackCat.SDK.login(function (res) {
+                console.log("[index]", 'login.callback.function.res => ', res)
+                showFuncRes(res)
+            });
+        }
+
+        function invokescript() {
+            var data = {
+                nnc: document.getElementById('nnc').value,
+                sbParamJson: document.getElementById('sbParamJson').value,
+                sbPushString: document.getElementById('sbPushString').value,
+                extString: document.getElementById('extString').value
+            }
+            data.sbParamJson = JSON.parse(data.sbParamJson)
+            BlackCat.SDK.invokescript(data, function (res) {
+                console.log("[index]", 'invokescript.callback.function.res => ', res)
+                showFuncRes(res)
+            })
+        }
+
+        function makerawtransaction() {
+            var data = {
+                nnc: document.getElementById('nnc2').value,
+                sbParamJson: document.getElementById('sbParamJson2').value,
+                sbPushString: document.getElementById('sbPushString2').value,
+                extString: document.getElementById('extString2').value
+            }
+            data.sbParamJson = JSON.parse(data.sbParamJson)
+
+            BlackCat.SDK.makeRawTransaction(data, function (res) {
+                console.log("[index]", 'makerawtransaction.callback.function.res => ', res)
+                showFuncRes(res)
+            })
+        }
+
+
+        function confirmappnotify() {
+            var data = {
+                txid: document.getElementById('txid').value
+            }
+
+            BlackCat.SDK.confirmAppNotify(data, function (res) {
+                console.log("[index]", 'confirmAppNotify.callback.function.res => ', res)
+                showFuncRes(res)
+            })
+        }
+
+        function showMain() {
+            showDiv(null)
+            BlackCat.SDK.showMain()
+        }
+
+        function showIcon() {
+            showDiv(null)
+            BlackCat.SDK.showIcon()
+        }
+
+        function getbalance() {
+            showDiv(null)
+            BlackCat.SDK.getBalance(function (res) {
+                console.log("getbalance.callback.function.res ", res)
+                showFuncRes(res)
+            })
+        }
+
+        function getUserInfo() {
+            showDiv(null)
+            BlackCat.SDK.getUserInfo(function (res) {
+                console.log("getUserInfo.callback.function.res ", res)
+                showFuncRes(res)
+            })
+        }
+
+        function makeTransfer() {
+            var data = {
+                type: document.getElementById("trans_type").value,
+                toaddr: document.getElementById('trans_toaddr').value,
+                count: document.getElementById('trans_count').value,
+                extString: document.getElementById('trans_extString').value
+            }
+            BlackCat.SDK.makeTransfer(data, function (res) {
+                console.log("makeTransfer.callback.function.res ", res)
+                showFuncRes(res)
+            })
+        }
+
+        function makeGasTransferMulti() {
+            var data = [
+                {
+                    toaddr: document.getElementById('toaddrMulti1').value,
+                    count: document.getElementById('gascountMulti1').value,
+                    extString: document.getElementById('extStringMulti1').value
+                },
+                {
+                    toaddr: document.getElementById('toaddrMulti2').value,
+                    count: document.getElementById('gascountMulti2').value,
+                    extString: document.getElementById('extStringMulti2').value
+                }
+            ]
+            BlackCat.SDK.makeGasTransferMulti(data, function (res) {
+                console.log("makeGasTransfeMultir.callback.function.res ", res)
+                showFuncRes(res)
+            })
+        }
+
+        function getNetType() {
+            showDiv(null)
+            BlackCat.SDK.getNetType(function (res) {
+                console.log("getNetType.callback.function.res ", res)
+                showFuncRes(res)
+            })
+        }
+
+        function lockNet() {
+            showDiv(null)
+            BlackCat.SDK.lockNet()
+        }
+
+        function setDefaultNetType(type) {
+            showDiv(null)
+            BlackCat.SDK.setDefaultNetType(type)
+        }
+
+        function getHeight() {
+            showDiv(null)
+            BlackCat.SDK.getHeight(function(res) {
+                console.log("getHeight.function.res ", res)
+                showFuncRes(res)
+            })
+        }
+
+
+        initSDK()
+        setDefaultNetType(2)
+        lockNet()
+        login()
+    </script>
+</body>
+
+</html>
