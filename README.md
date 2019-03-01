@@ -35,7 +35,9 @@ This document illustrates how to use the BlaCatSDK(NeoGameSDK) and how to access
 	* [Show Main View(showMain)](#2-show-main-viewshowmain)
 * [SDK Default Net Type](#sdk-default-net-type)
 	* [Set Default Net Type(setDefaultNetType)](#1-set-default-net-typesetdefaultnettype)
-
+* [SDK Others](#sdk-others)
+    * [Dependent](#1-dependent)
+    * [Storage of Wallet Operation Records](#2-storage-of-wallet-operation-records)
 
 
 
@@ -887,4 +889,22 @@ BlackCat.SDK.setDefaultNetType(netType)
 
 ----
 
+
+
+
+## SDK Others
+
+### 1. Dependent
+
+* [`NEO_Block_API`](#https://github.com/NewEconoLab/NEO_Block_API)
+* [`NeoBlock-Mongo-Storage`](#https://github.com/NewEconoLab/NeoBlock-Mongo-Storage)
+* [`neo-cli`](#https://github.com/neo-project/neo-cli)
+
+### 2. Storage of Wallet Operation Records
+
+> Current wallet operation records are stored in the browser's `LocalStorage`, which can be modified by yourself if there are other requirements.
+
+[`Return Catalog`](#catalog)
+
+----
 

@@ -31,7 +31,9 @@
 	* [显示主界面（showMain）](#2显示主界面showmain)
 * [SDK默认网络类型](#sdk默认网络类型)
 	* [设置默认网络类型（setDefaultNetType）](#1设置默认网络类型setdefaultnettype)
-
+* [SDK其他说明](#sdk其他说明)
+    * [关联程序](#1关联程序)
+    * [操作记录存储](#2操作记录存储)
 
 
 ## BlaCat简介
@@ -874,6 +876,23 @@ BlackCat.SDK.setDefaultNetType(netType)
 - 调用返回
 
 `无返回`
+
+[`返回目录`](#目录)
+
+----
+
+
+## SDK其他说明
+
+### 1、关联程序
+
+* [`NEO_Block_API`](#https://github.com/NewEconoLab/NEO_Block_API)
+* [`NeoBlock-Mongo-Storage`](#https://github.com/NewEconoLab/NeoBlock-Mongo-Storage)
+* [`neo-cli`](#https://github.com/neo-project/neo-cli)
+
+### 2、操作记录存储
+
+> 当前钱包操作记录存储于浏览器的LocalStorage，如果有其他需求，可自行修改。
 
 [`返回目录`](#目录)
 
